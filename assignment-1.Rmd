@@ -49,7 +49,9 @@ You can use the data set directly by importing the csv file in the repository.
 a) How many unique astronauts are stored in the data set?
 
 ```{r}
-# YOUR CODE HERE
+astronauts_unique <- astronauts[!duplicated(astronauts$name),]
+length(astronauts_unique$name)
+
 ```
 
 <br>
@@ -57,7 +59,11 @@ a) How many unique astronauts are stored in the data set?
 b) What's the overall share of female astronauts? And what's the share of astronauts with U.S. nationality?
 
 ```{r}
-# YOUR CODE HERE
+share_female <- mean(astronauts_unique$sex == "female", na.rm = TRUE)
+share_us <- sum(astronauts_unique$nationality == "U.S.", na.rm = TRUE) / nrow(astronauts_unique)
+
+share_female
+share_us
 ```
 
 <br>
