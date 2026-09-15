@@ -71,7 +71,13 @@ share_us
 c) Create a new data set `total_hours_df` containing the unique names and the total duration of all missions in hours (`total_hrs_sum`) for each astronaut in the data. Then, visualize the distribution of that variable using an appropriate plot type.
 
 ```{r}
-# YOUR CODE HERE
+total_hours_df <- astronauts %>%
+  group_by(name) %>%
+  summarise(
+    total_hrs_sum = sum(hours_mission))
+boxplot(total_hours_df$total_hrs_sum)
+plot(density(total_hours_df$total_hrs_sum))
+
 ```
 
 <br>
@@ -79,7 +85,12 @@ c) Create a new data set `total_hours_df` containing the unique names and the to
 d) Provide a plot that shows the overall share of *civilian* astronauts by the year of mission!
 
 ```{r}
-# YOUR CODE HERE
+civilian_by_year <- astronauts %>%
+  group_by(year_of_mission) %>%
+  summarise(
+    share_civilian = sum(military_civilian == "civilian") / n()
+  )
+plot(civilian_by_year$year_of_mission,civilian_by_year$share_civilian, type = "l")
 ```
 
 
