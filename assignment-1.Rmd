@@ -96,7 +96,6 @@ plot(civilian_by_year$year_of_mission,civilian_by_year$share_civilian, type = "l
 
 <br>
 
-***
 
 
 ### Task 2 – Writing functions
