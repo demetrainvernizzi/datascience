@@ -103,6 +103,16 @@ plot(civilian_by_year$year_of_mission,civilian_by_year$share_civilian, type = "l
 a) Given a vector of birthdates, write a function that computes the vector of corresponding ages in years.
 
 ```{r}
+calculate_age <- function(birth_year, current_year = 2026) {
+  age <- current_year - birth_year
+  print(age)
+}
+birth_years <- c(1990,1991,1997, 2005)
+calculate_age(birth_years)
+```
+
+
+```{r}
 # YOUR CODE HERE
 ```
 
