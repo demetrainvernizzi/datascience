@@ -1,0 +1,61 @@
+---
+title: "assignment1_sol"
+output: html_document
+date: "2026-09-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+a) How many unique astronauts are stored in the data set?
+
+```{r}
+astronauts_unique <- astronauts[!duplicated(astronauts$name),]
+length(astronauts_unique$name)
+
+```
+
+<br>
+
+b) What's the overall share of female astronauts? And what's the share of astronauts with U.S. nationality?
+
+```{r}
+share_female <- mean(astronauts_unique$sex == "female", na.rm = TRUE)
+share_us <- sum(astronauts_unique$nationality == "U.S.", na.rm = TRUE) / nrow(astronauts_unique)
+
+share_female
+share_us
+```
+
+<br>
+
+c) Create a new data set `total_hours_df` containing the unique names and the total duration of all missions in hours (`total_hrs_sum`) for each astronaut in the data. Then, visualize the distribution of that variable using an appropriate plot type.
+
+```{r}
+total_hours_df <- astronauts %>%
+  group_by(name) %>%
+  summarise(
+    total_hrs_sum = sum(hours_mission))
+boxplot(total_hours_df$total_hrs_sum)
+plot(density(total_hours_df$total_hrs_sum))
+
