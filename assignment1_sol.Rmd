@@ -1,32 +1,51 @@
 ---
-title: "assignment1_sol"
-output: html_document
-date: "2026-09-15"
+title: "Assignment 1 - Data wrangling and functions"
+author: "FILL IN YOUR FULL NAME"
+date: "`r format(Sys.time(), '%B %d, %Y | %H:%M:%S | %Z')`"
+output:
+  html_document:
+    code_folding: show
+    df_print: paged
+    highlight: tango
+    number_sections: no
+    theme: cosmo
+    toc: no
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = TRUE,
+                      error = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      comment = NA)
 ```
 
-## R Markdown
+***
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r, include = T}
+# LOAD THE PACKAGES YOU ARE USING IN THIS CODE CHUNK
+# library(nameofpackage)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+<br>
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+## Task 1: Getting started with the Astronaut Database
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The data this week comes from [Mariya Stavnichuk and Tatsuya Corlett](https://data.mendeley.com/datasets/86tsnnbv2w/1). 
+
+This [article](https://www.sciencedirect.com/science/article/abs/pii/S2214552420300444) talks about the data set in greater detail.
+
+> This database contains publically available information about all astronauts who participated in space missions before 15 January 2020 collected from NASA, Roscosmos, and fun-made websites. The provided information includes full astronaut name, sex, date of birth, nationality, military status, a title and year of a selection program, and information about each mission completed by a particular astronaut such as a year, ascend and descend shuttle names, mission and extravehicular activity (EVAs) durations.
+
+You can use the data set directly by importing the csv file in the repository.
+
+<br>
+
+***
+
 a) How many unique astronauts are stored in the data set?
 
 ```{r}
@@ -58,4 +77,145 @@ total_hours_df <- astronauts %>%
     total_hrs_sum = sum(hours_mission))
 boxplot(total_hours_df$total_hrs_sum)
 plot(density(total_hours_df$total_hrs_sum))
+
+```
+
+<br>
+
+d) Provide a plot that shows the overall share of *civilian* astronauts by the year of mission!
+
+```{r}
+civilian_by_year <- astronauts %>%
+  group_by(year_of_mission) %>%
+  summarise(
+    share_civilian = sum(military_civilian == "civilian") / n()
+  )
+plot(civilian_by_year$year_of_mission,civilian_by_year$share_civilian, type = "l")
+```
+
+
+<br>
+
+
+
+### Task 2 – Writing functions
+
+a) Given a vector of birthdates, write a function that computes the vector of corresponding ages in years.
+
+```{r}
+calculate_age <- function(birth_year, current_year = 2026) {
+  age <- current_year - birth_year
+  print(age)
+}
+birth_years <- c(1990,1991,1997, 2005) #example
+calculate_age(birth_years)
+```
+<br>
+
+
+
+
+b) Write `both_na()`, a summary function that takes two vectors of the same length and returns the number of positions that have an `NA` in both vectors. For example the two vectors `a <- c(1, NA, 2, NA)` and `b <- c(3, NA, NA, 4)` should give 1.
+
+```{r}
+both_na <- function(vector_1, vector_2) {
+  count <- 0
+  if (length(vector_1) == length(vector_2)) {
+    for (i in 1:length(vector_1)) {
+      if (is.na(vector_1[i]) && is.na(vector_2[i])) {
+        count <- count + 1
+      }
+    }
+    return(count)
+  } else {
+    print("The two vectors have different lengths")
+  }
+}
+
+a <- c(1, NA, 2, NA)
+b <- c(3, NA, NA, 4)
+both_na(a,b)
+```
+<br>
+
+c) Program a function `check_password(pw)` that takes a password string `pw` and returns a funny *strength rating* according to the following rules:  
+
+1. If the password contains the word `"password"` (in any mix of upper/lower case), return `"Terrible!"`.
+2. If the password is shorter than 6 characters, return `"Too weak"`.  
+3. If it contains only letters, return `"Meh"`.  
+4. If it contains letters **and** numbers, return `"Not bad"`.  
+5. If it contains letters **and** numbers **and** at least one special character from `!@#$%^&*?`, return `"Strong"`.  
+
+Write the function and test it with at least **five different passwords** that trigger different outputs. Also, use functions from the `stringr` package to execute the checks in your function (hint: look up `str_detect()` and `str_length()`).
+
+```{r}
+install.packages("stringr")
+library(stringr)
+
+check_password <- function(pw){ 
+  if (str_detect(pw, regex("password", ignore_case = TRUE))){
+  print("Terrible")
+    
+  } else if (str_length(pw) < 6) {
+    print("Too weak")
+    
+  } else if(str_detect(pw,"[A-Za-z]") && str_detect(pw,"[0-9]" ) && str_detect(pw, "[!@#$%^&*?]"))
+  {
+    return("Strong")
+    
+  } else if (str_detect(pw,"[A-Za-z]") && str_detect(pw,"[0-9]" ))
+  {
+    print("Not bad")
+    
+  } else if  (str_detect(pw,"[A-Za-z]")) {
+    print("Meh")
+  }
+}
+
+check_password("PaSsword")
+check_password("Hertie")
+check_password("Yay")
+check_password("Hertie2026")
+check_password("Hertie2026!")
+```
+
+
+
+<br>
+
+***
+
+### Bonus challenge - The Monty Hall Machine
+
+**Note: This task is optional and not required for the assignment.**
+
+a) Write an R function that simulates the [Monty Hall problem](https://en.wikipedia.org/wiki/Monty_Hall_problem). Start with writing a function called `monty_hall_choice()` that: 
+- Simulates a single round of the Monty Hall problem.
+- Has an argument `switch` that controls whether the contestant switches doors after Monty reveals a goat.
+- Returns `TRUE` if the contestant wins the car, and `FALSE` if they do not.
+Test it by running it 10 times each with `switch = TRUE` and `switch = FALSE`, and summarize the results. *HINT: Consider loops*.
+
+```{r}
+# YOUR CODE HERE
+```
+
+<br>
+
+b) Now, create a function `monty_hall_simulation()` to simulate multiple rounds of the Monty Hall problem:
+- The function should wrap around the `monty_hall_choice()`.
+- Add an argument `n` to the function that specifies how many rounds to simulate.
+- The function should return the proportion of times the contestant wins the car for both strategies (`switch = TRUE` and `switch = FALSE`).
+
+```{r}
+# YOUR CODE HERE
+```
+
+<br>
+
+c) Generalize the Monty Hall Problem to $k$ doors and $k-1$ goats, where the host will open all doors except for 2. Now, visualize the probability of winning (proportion of wins) for both strategies (switch and stay) as a function of the number of simulated rounds n and the number of doors $k$, for a set of values for both $n$ and $k$ that you choose. *Important:* This is just for fun. You don't have to work on this task if you don't have time. Providing a right/wrong solution does not give/cost you extra points. (A right solution gives you kudos from the instructor though!)
+
+```{r}
+# YOUR CODE HERE
+```
+
 
